@@ -207,14 +207,14 @@ grad['log_tau_w'] = 0.0
 lw_factor = 10.0
 log_bw_factor = 1.0
 log_bc_factor = 1.0
-log_tau_w_factor = 1.0
+log_tau_w_factor = 5.0
 # log_tau_c_factor = 1.0
 
 w = 0.5  # update weight
 
 pos_neg_perc = 0.005
 late_learning_rate = 3e-3
-init_learning_rate = 1e-3
+init_learning_rate = 1.5e-3
 # GD params
 
 lw_list = [l_w]
@@ -227,11 +227,13 @@ mother_dir = os.getcwd()
 
 counter = 0
 switch_bc_converge = 0 
-cost_estimate = 10**3
-cost_thresh_rate_change = 30*(l_w > 15.0) + 80*(l_w < 15.0)
+# cost_estimate = 10**3
+# cost_thresh_rate_change = 30*(l_w > 15.0) + 80*(l_w < 15.0)
 while (not converge_cond):
     
     # learning_rate = late_learning_rate - (late_learning_rate-init_learning_rate)/(1+0.5*counter)
+    
+    learning_rate = init_learning_rate + (late_learning_rate-init_learning_rate)* ( 1.4*counter/(5 + 0.1 * counter**2) )
     
     #if counter<10:
     #    learning_rate = init_learning_rate
@@ -239,7 +241,7 @@ while (not converge_cond):
     #    learning_rate = 2 * late_learning_rate
     #else:
     #    learning_rate = 1 * late_learning_rate
-    learning_rate = 2e-3    
+    # learning_rate = 2e-3    
     ## grad evaluation
     
     # to l_w
