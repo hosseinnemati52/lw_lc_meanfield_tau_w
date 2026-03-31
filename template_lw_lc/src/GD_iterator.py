@@ -207,7 +207,7 @@ grad['log_tau_w'] = 0.0
 lw_factor = 10.0
 log_bw_factor = 1.0
 log_bc_factor = 1.0
-log_tau_w_factor = 5.0
+log_tau_w_factor = 3.0
 # log_tau_c_factor = 1.0
 
 w = 0.5  # update weight
@@ -477,12 +477,16 @@ while (not converge_cond):
     #     /np.abs(sequence_check['tau_w'][:,None])
     tau_w_mat_check = np.abs(sequence_check['tau_w'][:,None]-sequence_check['tau_w'][None,:])
     
-    converge_cond = \
-        np.max(lw_mat_check) < conv_thresh and \
-        np.max(bw_mat_check) < conv_thresh and \
-        np.max(bc_mat_check) < conv_thresh and \
-        np.max(tau_w_mat_check) < time_thresh
-        # np.max(tau_w_mat_check) < conv_thresh
+    # converge_cond = \
+    #     np.max(lw_mat_check) < conv_thresh and \
+    #     np.max(bw_mat_check) < conv_thresh and \
+    #     np.max(bc_mat_check) < conv_thresh and \
+    #     np.max(tau_w_mat_check) < time_thresh
+    #     # np.max(tau_w_mat_check) < conv_thresh
+    converge_cond = (np.max(cost_mat_check) < conv_thresh)
+        
+        
+        
         
     if np.max(bc_mat_check) < conv_thresh:
         switch_bc_converge = 1
