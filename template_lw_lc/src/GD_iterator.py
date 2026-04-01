@@ -512,6 +512,7 @@ while (not converge_cond):
     
 print("##################")
 print("CONVERGENCE: pp running!")
+subprocess.run(["python", "cost_mat_calc.py"])
 subprocess.run(["python", "pp_plotter_multi.py"])
 print("##################")
     
