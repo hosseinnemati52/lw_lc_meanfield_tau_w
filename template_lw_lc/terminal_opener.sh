@@ -19,7 +19,7 @@ total_num=$((len_lw * len_lc))
 
 read -r N < ../n_samples.txt  # Total number of runs from the txt file
 MAX_TERMINALS=2   # Number of terminals to open at a time
-THRESHOLD=$((total_num + 23))     # Minimum number of terminals to trigger new batch
+THRESHOLD=$((total_num + 24))     # Minimum number of terminals to trigger new batch
 INTERVAL=60       # Time interval to check in seconds
 started=0         # Counter for started scripts
 

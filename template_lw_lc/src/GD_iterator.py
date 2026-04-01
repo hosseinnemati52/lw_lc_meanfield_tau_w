@@ -213,6 +213,7 @@ log_tau_w_factor = 3.0
 w = 0.5  # update weight
 
 pos_neg_perc = 0.005
+delta_tau = 0.1 # 0.1 hour
 late_learning_rate = 3e-3
 init_learning_rate = 1.5e-3
 # GD params
@@ -351,7 +352,8 @@ while (not converge_cond):
     # to log_tau_w
     #pos
     shutil.copy2("params.txt", "GD_temp/params.txt")
-    log_tau_w_pos = log_tau_w + pos_neg_perc*abs(log_tau_w)
+    # log_tau_w_pos = log_tau_w + pos_neg_perc*abs(log_tau_w)
+    log_tau_w_pos = np.log(tau_w + delta_tau)
     tau_w_pos = np.exp(log_tau_w_pos)
     params_updater("GD_temp/params.txt", ["tau_w"], [tau_w_pos])
     os.chdir("GD_temp")   # go into daughter folder
@@ -364,7 +366,8 @@ while (not converge_cond):
     #pos
     #neg
     shutil.copy2("params.txt", "GD_temp/params.txt")
-    log_tau_w_neg = log_tau_w - pos_neg_perc*abs(log_tau_w)
+    # log_tau_w_neg = log_tau_w - pos_neg_perc*abs(log_tau_w)
+    log_tau_w_neg = np.log(tau_w - delta_tau)
     tau_w_neg = np.exp(log_tau_w_neg)
     params_updater("GD_temp/params.txt", ["tau_w"], [tau_w_neg])
     os.chdir("GD_temp")   # go into daughter folder
