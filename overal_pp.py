@@ -376,8 +376,9 @@ b_w_data_err = np.zeros((len(lw_list), len(lc_list)))
 b_c_data_avg = np.zeros((len(lw_list), len(lc_list)))
 b_c_data_err = np.zeros((len(lw_list), len(lc_list)))
 
-# tau_w_data_avg = np.zeros((len(lw_list), len(lc_list)))
-# tau_w_data_err = np.zeros((len(lw_list), len(lc_list)))
+
+tau_w_data_avg = np.zeros((len(lw_list), len(lc_list)))
+tau_w_data_err = np.zeros((len(lw_list), len(lc_list)))
 
 # tau_c_data_avg = np.zeros((len(lw_list), len(lc_list)))
 # tau_c_data_err = np.zeros((len(lw_list), len(lc_list)))
@@ -467,9 +468,9 @@ for lw_ind in range(len(lw_list)):
         b_c_list.clear()
         b_c_list = []
         
-        # tau_w_list = []
-        # tau_w_list.clear()
-        # tau_w_list = []
+        tau_w_list = []
+        tau_w_list.clear()
+        tau_w_list = []
         
         # tau_c_list = []
         # tau_c_list.clear()
@@ -579,11 +580,11 @@ for lw_ind in range(len(lw_list)):
             # b_w, b_c, tau_w, tau_c
             b_w = GD_log_data[-1,4]
             b_c = GD_log_data[-1,5]
-            # tau_w = GD_log_data[-1,5]
+            tau_w = GD_log_data[-1,6]
             # tau_c = GD_log_data[-1,6]
             b_w_list.append(b_w)
             b_c_list.append(b_c)
-            # tau_w_list.append(tau_w)
+            tau_w_list.append(tau_w)
             # tau_c_list.append(tau_c)
             # b_w, b_c, tau_w, tau_c
             
@@ -761,10 +762,10 @@ for lw_ind in range(len(lw_list)):
         b_c_data_avg[lw_ind, lc_ind] = b_c_avg
         b_c_data_err[lw_ind, lc_ind] = b_c_err
         
-        # tau_w_avg = np.mean(tau_w_list)
-        # tau_w_err = np.std(tau_w_list)/np.sqrt(n_samples-1)
-        # tau_w_data_avg[lw_ind, lc_ind] = tau_w_avg
-        # tau_w_data_err[lw_ind, lc_ind] = tau_w_err
+        tau_w_avg = np.mean(tau_w_list)
+        tau_w_err = np.std(tau_w_list)/np.sqrt(n_samples-1)
+        tau_w_data_avg[lw_ind, lc_ind] = tau_w_avg
+        tau_w_data_err[lw_ind, lc_ind] = tau_w_err
         
         # tau_c_avg = np.mean(tau_c_list)
         # tau_c_err = np.std(tau_c_list)/np.sqrt(n_samples-1)
@@ -862,8 +863,8 @@ data_saver(b_w_data_err, "b_w_data_err.csv")
 data_saver(b_c_data_avg, "b_c_data_avg.csv")
 data_saver(b_c_data_err, "b_c_data_err.csv")
 
-# data_saver(tau_w_data_avg, "tau_w_data_avg.csv")
-# data_saver(tau_w_data_err, "tau_w_data_err.csv")
+data_saver(tau_w_data_avg, "tau_w_data_avg.csv")
+data_saver(tau_w_data_err, "tau_w_data_err.csv")
 
 # data_saver(tau_c_data_avg, "tau_c_data_avg.csv")
 # data_saver(tau_c_data_err, "tau_c_data_err.csv")
@@ -923,6 +924,20 @@ beta_a_norm_plotter_W(beta_w_a_norm_dict, "W")
 # plt.savefig("b_c_tot_avg.PNG", dpi=300)
 # # plot b_c_tot
 
+
+# plot tau_w
+plt.figure()
+for i in range(len(lc_list)):
+    label = 'lc = '+str(lc_list[i])
+    plt.errorbar(lw_list, y=tau_w_data_avg[:,i], yerr = tau_w_data_err[:,i], label=label)
+plt.legend(fontsize=15)
+plt.xlabel("l_w", fontsize=15)
+plt.ylabel(r"$\tau_W$", fontsize=15)
+plt.xscale("log")
+plt.grid()
+plt.tight_layout()
+plt.savefig("tau_w.PNG", dpi=300)
+# plot tau_w
 
 # plot cost
 plt.figure()
