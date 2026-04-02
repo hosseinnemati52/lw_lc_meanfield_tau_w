@@ -214,7 +214,8 @@ def cost_calc_derivs(cost_key):
     log_w_bar_mod_interpolate_err = np.interp(exp_time, time, log_w_bar_mod_err)
     log_w_bar_exp     = np.log(WT_mix_norm_avg)
     log_w_bar_exp_err = WT_mix_norm_err / WT_mix_norm_avg
-    SEM_y = (  log_w_bar_mod_interpolate_err**2 + log_w_bar_exp_err**2  )**0.5
+    # SEM_y = (  log_w_bar_mod_interpolate_err**2 + log_w_bar_exp_err**2  )**0.5
+    SEM_y = log_w_bar_exp_err
     r_y = abs(log_w_bar_mod_interpolate-log_w_bar_exp)
     # cost_mat[0,0] = lambdas[0] * np.sum( (r_y[1:]/SEM_y[1:])**2 )
     cost_mat[0,0] = np.sum( (r_y[1:]/SEM_y[1:])**2 )
@@ -287,7 +288,8 @@ def cost_calc_derivs(cost_key):
     log_c_bar_mod_interpolate_err = np.interp(exp_time, time, log_c_bar_mod_err)
     log_c_bar_exp = np.log(C_mix_norm_avg)
     log_c_bar_exp_err = C_mix_norm_err / C_mix_norm_avg
-    SEM_y = (  log_c_bar_mod_interpolate_err**2 + log_c_bar_exp_err**2  )**0.5
+    # SEM_y = (  log_c_bar_mod_interpolate_err**2 + log_c_bar_exp_err**2  )**0.5
+    SEM_y = log_c_bar_exp_err
     r_y = abs(log_c_bar_mod_interpolate-log_c_bar_exp)
     # cost_mat[1,0] = lambdas[0] * np.sum( (r_y[1:]/SEM_y[1:])**2 )
     cost_mat[1,0] = np.sum( (r_y[1:]/SEM_y[1:])**2 )

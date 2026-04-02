@@ -201,19 +201,22 @@ grad = dict()
 grad['lw'] = 0.0
 grad['log_bw'] = 0.0
 grad['log_bc'] = 0.0
-grad['log_tau_w'] = 0.0
+# grad['log_tau_w'] = 0.0
+grad['tau_w'] = 0.0
 # grad['log_tau_c'] = 0.0
 
 lw_factor = 10.0
 log_bw_factor = 1.0
 log_bc_factor = 1.0
-log_tau_w_factor = 3.0
+tau_w_factor = 3000.0
+# log_tau_w_factor = 3.0
 # log_tau_c_factor = 1.0
 
 w = 0.5  # update weight
 
 pos_neg_perc = 0.005
-delta_tau = 0.1 # 0.1 hour
+delta_tau = 0.5 # 0.1 hour
+max_tau_change = 2  #2 hours
 late_learning_rate = 3e-3
 init_learning_rate = 1.5e-3
 # GD params
@@ -349,12 +352,11 @@ while (not converge_cond):
         grad['log_bc'] = (cost_b_c_pos-cost_b_c_neg)/(log_bc_pos-log_bc_neg)
         # to log_bc
     
-    # to log_tau_w
+    
+    # to tau_w
     #pos
     shutil.copy2("params.txt", "GD_temp/params.txt")
-    # log_tau_w_pos = log_tau_w + pos_neg_perc*abs(log_tau_w)
-    log_tau_w_pos = np.log(tau_w + delta_tau)
-    tau_w_pos = np.exp(log_tau_w_pos)
+    tau_w_pos = tau_w + delta_tau
     params_updater("GD_temp/params.txt", ["tau_w"], [tau_w_pos])
     os.chdir("GD_temp")   # go into daughter folder
     subprocess.run(["python", "mean_field_lw_lc_ratio_multi.py"])  # run code here
@@ -366,9 +368,7 @@ while (not converge_cond):
     #pos
     #neg
     shutil.copy2("params.txt", "GD_temp/params.txt")
-    # log_tau_w_neg = log_tau_w - pos_neg_perc*abs(log_tau_w)
-    log_tau_w_neg = np.log(tau_w - delta_tau)
-    tau_w_neg = np.exp(log_tau_w_neg)
+    tau_w_neg = tau_w - delta_tau
     params_updater("GD_temp/params.txt", ["tau_w"], [tau_w_neg])
     os.chdir("GD_temp")   # go into daughter folder
     subprocess.run(["python", "mean_field_lw_lc_ratio_multi.py"])  # run code here
@@ -378,8 +378,41 @@ while (not converge_cond):
         cost_tau_w_neg = np.loadtxt("GD_log.csv", delimiter=',', dtype=float)[0]
     os.chdir(mother_dir)
     #neg
-    grad['log_tau_w'] = (cost_tau_w_pos-cost_tau_w_neg)/(log_tau_w_pos-log_tau_w_neg)
-    # to log_tau_w
+    grad['tau_w'] = (cost_tau_w_pos-cost_tau_w_neg)/(2 * delta_tau)
+    # to tau_w
+    
+    
+    # # to log_tau_w
+    # #pos
+    # shutil.copy2("params.txt", "GD_temp/params.txt")
+    # # log_tau_w_pos = log_tau_w + pos_neg_perc*abs(log_tau_w)
+    # log_tau_w_pos = np.log(tau_w + delta_tau)
+    # tau_w_pos = np.exp(log_tau_w_pos)
+    # params_updater("GD_temp/params.txt", ["tau_w"], [tau_w_pos])
+    # os.chdir("GD_temp")   # go into daughter folder
+    # subprocess.run(["python", "mean_field_lw_lc_ratio_multi.py"])  # run code here
+    # try:
+    #     cost_tau_w_pos = np.loadtxt("GD_log.csv", delimiter=',', dtype=float)[-1,0]
+    # except IndexError:
+    #     cost_tau_w_pos = np.loadtxt("GD_log.csv", delimiter=',', dtype=float)[0]
+    # os.chdir(mother_dir)
+    # #pos
+    # #neg
+    # shutil.copy2("params.txt", "GD_temp/params.txt")
+    # # log_tau_w_neg = log_tau_w - pos_neg_perc*abs(log_tau_w)
+    # log_tau_w_neg = np.log(tau_w - delta_tau)
+    # tau_w_neg = np.exp(log_tau_w_neg)
+    # params_updater("GD_temp/params.txt", ["tau_w"], [tau_w_neg])
+    # os.chdir("GD_temp")   # go into daughter folder
+    # subprocess.run(["python", "mean_field_lw_lc_ratio_multi.py"])  # run code here
+    # try:
+    #     cost_tau_w_neg = np.loadtxt("GD_log.csv", delimiter=',', dtype=float)[-1,0]
+    # except IndexError:
+    #     cost_tau_w_neg = np.loadtxt("GD_log.csv", delimiter=',', dtype=float)[0]
+    # os.chdir(mother_dir)
+    # #neg
+    # grad['log_tau_w'] = (cost_tau_w_pos-cost_tau_w_neg)/(log_tau_w_pos-log_tau_w_neg)
+    # # to log_tau_w
     
     # to log_tau_c
     #pos
@@ -418,18 +451,22 @@ while (not converge_cond):
     delta_l_w =    - w * learning_rate * lw_factor * grad['lw']
     delta_log_bw = - w * learning_rate * log_bw_factor * grad['log_bw']
     delta_log_bc = - w * learning_rate * log_bc_factor * grad['log_bc']
-    delta_log_tau_w = - w * learning_rate * log_tau_w_factor * grad['log_tau_w']
+    # delta_log_tau_w = - w * learning_rate * log_tau_w_factor * grad['log_tau_w']
+    delta_tau_w = - w * learning_rate * tau_w_factor * grad['tau_w']
+    if abs(delta_tau_w)>max_tau_change:
+        delta_tau_w = np.sign(delta_tau_w) * max_tau_change
     # delta_log_tau_c = - w * learning_rate * log_tau_c_factor * grad['log_tau_c']
     
     l_w += delta_l_w
     log_bw += delta_log_bw
     log_bc += delta_log_bc
-    log_tau_w += delta_log_tau_w
+    # log_tau_w += delta_log_tau_w
+    tau_w += delta_tau_w
     # log_tau_c += delta_log_tau_c
     
     b_w  = np.exp(log_bw)
     b_c  = np.exp(log_bc)
-    tau_w  = np.exp(log_tau_w)
+    # tau_w  = np.exp(log_tau_w)
     # tau_c  = np.exp(log_tau_c)
     
     
