@@ -491,33 +491,38 @@ for lw_ind in range(len(lw_list)):
         for sample_c in range(n_samples):
             address = folder_name + "/sample_"+str(sample_c+1)
             GD_log_data = np.loadtxt(address+"/GD_log.csv", delimiter=',')
-            cost = GD_log_data[-1, 0]
-            cost_list.append(cost)
+            # cost = GD_log_data[-1, 0]
+            # cost_list.append(cost)
             
-            #reading details of cost
-            with open(address+"/cost_log.txt", 'r') as f:
-                content = f.read()
+            # #reading details of cost
+            # with open(address+"/cost_log.txt", 'r') as f:
+            #     content = f.read()
             
-            # Split into blocks using the separator
-            blocks = content.strip().split('--------')
+            # # Split into blocks using the separator
+            # blocks = content.strip().split('--------')
             
-            # Take the last non-empty block
-            last_block = blocks[-1].strip()
-            if last_block == '':
-                last_block = blocks[-2].strip()
+            # # Take the last non-empty block
+            # last_block = blocks[-1].strip()
+            # if last_block == '':
+            #     last_block = blocks[-2].strip()
             
             # Split lines and convert to float
-            cost_detail_data = []
-            for line in last_block.splitlines():
-                if line.strip():  # skip empty lines
-                    numbers = list(map(float, line.split()))
-                    cost_detail_data.append(numbers)
-            cost_detail_data=np.array(cost_detail_data)
+            cost_detail_data = np.loadtxt(address+"/data/cost_mat_final.txt", delimiter=',')
+            # cost_detail_data = []
+            # for line in last_block.splitlines():
+            #     if line.strip():  # skip empty lines
+            #         numbers = list(map(float, line.split()))
+            #         cost_detail_data.append(numbers)
+            # cost_detail_data=np.array(cost_detail_data)
             
             main_cost_list_w.append(cost_detail_data[0,0])
             main_cost_list_c.append(cost_detail_data[1,0])
             deriv_cost_list_w.append(cost_detail_data[0,1])
             deriv_cost_list_c.append(cost_detail_data[1,1])
+            
+            lambdas = np.loadtxt(address+"/lambdas.txt", delimiter=',')
+            cost = np.sum( (cost_detail_data[0,:]) * lambdas + (cost_detail_data[1,:] * lambdas) )
+            cost_list.append(cost)
             #reading details of cost
             
             A_w_sample = np.loadtxt(address+"/data/"+"A_w_mat.txt", delimiter=',')
