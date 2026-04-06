@@ -208,17 +208,19 @@ grad['tau_w'] = 0.0
 lw_factor = 10.0
 log_bw_factor = 1.0
 log_bc_factor = 1.0
-tau_w_factor = 3000.0
+tau_w_factor = 4000.0
 # log_tau_w_factor = 3.0
 # log_tau_c_factor = 1.0
 
 w = 0.5  # update weight
 
 pos_neg_perc = 0.005
-delta_tau = 0.5 # 0.1 hour
+delta_tau = 0.1 # 0.1 hour
 max_tau_change = 2  #2 hours
-late_learning_rate = 3e-3
-init_learning_rate = 1.5e-3
+max_log_bw_change = np.log(2)  #2-fold
+max_log_bc_change = np.log(2)  #2-fold
+late_learning_rate = 4e-3
+init_learning_rate = 3e-3
 # GD params
 
 lw_list = [l_w]
@@ -455,6 +457,10 @@ while (not converge_cond):
     delta_tau_w = - w * learning_rate * tau_w_factor * grad['tau_w']
     if abs(delta_tau_w)>max_tau_change:
         delta_tau_w = np.sign(delta_tau_w) * max_tau_change
+    if abs(delta_log_bw)>max_log_bw_change:
+        delta_log_bw = np.sign(delta_log_bw) * max_log_bw_change
+    if abs(delta_log_bc)>max_log_bc_change:
+        delta_log_bc = np.sign(delta_log_bc) * max_log_bc_change
     # delta_log_tau_c = - w * learning_rate * log_tau_c_factor * grad['log_tau_c']
     
     l_w += delta_l_w
